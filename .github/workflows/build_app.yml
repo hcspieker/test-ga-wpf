@@ -1,0 +1,48 @@
+name: Build SmallWpfApp
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/publish_app.yml"
+      - "SmallWpfApp/**"
+  workflow_dispatch:
+  
+env:
+  BUILD_FILTER: 'SmallWpfApp/SmallWpfApp.slnx'
+  PUBLISH_FILTER: 'SmallWpfApp/SmallWpfApp.csproj'
+  BUILD_CONFIG: 'Release'
+  ARTIFACT_NAME: 'SmallWpfApp'
+  DOTNET_VERSION: 10.0.x
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+  
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      shell: bash
+      run: dotnet restore ${{ env.BUILD_FILTER }}
+
+    - name: Build
+      shell: bash
+      run: dotnet build ${{ env.BUILD_FILTER }} --configuration ${{ env.BUILD_CONFIG }} --no-restore
+
+    - name: Publish
+      shell: bash
+      run: dotnet publish ${{ env.PUBLISH_FILTER }} --configuration ${{ env.BUILD_CONFIG }} --output ./publish --no-build
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: ./publish/
+        retention-days: 7
