@@ -11,7 +11,7 @@ on:
   
 env:
   BUILD_FILTER: 'SmallWpfApp/SmallWpfApp.slnx'
-  PUBLISH_FILTER: 'SmallWpfApp/SmallWpfApp.slnx'
+  PUBLISH_FILTER: 'SmallWpfApp/SmallWpfApp.csproj'
   BUILD_CONFIG: 'Release'
   ARTIFACT_NAME: 'SmallWpfApp'
   DOTNET_VERSION: 10.0.x
