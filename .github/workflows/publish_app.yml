@@ -1,9 +1,8 @@
 name: Publish SmallWpfApp
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  release:
+    types: [published]
   
 env:
   BUILD_FILTER: 'SmallWpfApp/SmallWpfApp.slnx'
@@ -54,21 +53,14 @@ jobs:
       with:
         name: ${{ env.ARTIFACT_NAME }}
         path: ./publish
-    
-    - name: Extract version from tag
-      if: startsWith(github.ref, 'refs/tags/')
-      run: |
-        TAG=${GITHUB_REF#refs/tags/}
-        echo "TAG=$TAG" >> $GITHUB_ENV
-        echo "Extracted TAG: $TAG"
 
     - name: Zip published files
       run: |
         cd publish
-        zip -r ../${{ env.ARTIFACT_NAME }}-${{ env.TAG }}.zip .
+        zip -r ../${{ env.ARTIFACT_NAME }}-${{ github.event.release.tag_name }}.zip .
         cd ..
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v2
       with:
-        files: ${{ env.ARTIFACT_NAME }}-${{ env.TAG }}.zip
+        files: ${{ env.ARTIFACT_NAME }}-${{ github.event.release.tag_name }}.zip
